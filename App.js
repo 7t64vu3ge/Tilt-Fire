@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { useState, useEffect } from "react";
-import { View, StyleSheet, Dimensions, Text } from "react-native";
+import { View, StyleSheet, Dimensions, Text, TouchableWithoutFeedback } from "react-native";
+import { Accelerometer } from 'expo-sensors';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const PLAYER_WIDTH = 50;
@@ -14,12 +15,65 @@ const BLOCK_HEIGHT = 40;
 
 export default function App() {
   const [playerX, setPlayerX] = useState((screenWidth - PLAYER_WIDTH) / 2);
+  const [bullet, setBullet] = useState([])
+
+  useEffect(() => {
+    Accelerometer.setUpdateInterval(1)
+
+    const subscription = Accelerometer.addListener(({ x }) => {
+      if (0 < playerX < screenWidth - PLAYER_WIDTH) setPlayerX(prev => {
+        let pos = prev + (x * 10)
+        if (pos > screenWidth - PLAYER_WIDTH) {
+          pos = screenWidth - PLAYER_WIDTH
+        } else if (pos < 0) {
+          pos = 0
+        }
+
+        return pos
+      }
+      )
+      console.log("Value of x:", x)
+    })
+
+    return () => subscription.remove()
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBullet(prev => {
+        const moved = prev.map(b => ({ ...b, y: b.y + 10 }));
+
+        return moved.filter(b => b.y < screenHeight + BULLET_HEIGHT);
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleBullet = () => {
+    const bullet = {
+      id: Date.now(),
+      x: playerX + (PLAYER_WIDTH - BULLET_WIDTH)/2,
+      y: PLAYER_HEIGHT
+    }
+
+    setBullet(prev => [...prev, bullet])
+  }
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.player, { left: playerX }]} />
-      <Text style={styles.instruction}>Tilt your phone to move</Text>
-    </View>
+    <TouchableWithoutFeedback onPress={handleBullet}>
+      <View style={styles.container}>
+        {
+          bullet.map((e) => {
+            return (
+              <View style = {[styles.bullet, {left: e.x, bottom: e.y}]}></View>
+            )
+          })
+        }
+        <View style={[styles.player, { left: playerX }]} />
+        <Text style={styles.instruction}>Tilt your phone to move</Text>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
