@@ -28,15 +28,15 @@ const FIRE_COOLDOWN = 50
 
 const WAVES = [
   { count: 4, speedMul: 1 },
-  { count: 5, speedMul: 1.05 },
-  { count: 6, speedMul: 1.1 },
-  { count: 7, speedMul: 1.12 },
-  { count: 8, speedMul: 1.2 },
-  { count: 9, speedMul: 1.25 },
-  { count: 10, speedMul: 1.3 },
-  { count: 11, speedMul: 1.35 },
-  { count: 12, speedMul: 1.45 },
-  { count: 14, speedMul: 1.6 },
+  { count: 5, speedMul: 1 },
+  { count: 6, speedMul: 1.05 },
+  { count: 7, speedMul: 1.1 },
+  { count: 8, speedMul: 1.1 },
+  { count: 9, speedMul: 1.15 },
+  { count: 10, speedMul: 1.15 },
+  { count: 11, speedMul: 1.2 },
+  { count: 12, speedMul: 1.3 },
+  { count: 14, speedMul: 1.4 },
 ]
 
 
