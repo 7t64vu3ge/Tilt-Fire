@@ -15,63 +15,53 @@ const BLOCK_HEIGHT = 40;
 
 export default function App() {
   const [playerX, setPlayerX] = useState((screenWidth - PLAYER_WIDTH) / 2);
-  const [bullet, setBullet] = useState([])
+  const [bullets, setBullets] = useState([]);
 
   useEffect(() => {
-    Accelerometer.setUpdateInterval(1)
+    Accelerometer.setUpdateInterval(1);
 
     const subscription = Accelerometer.addListener(({ x }) => {
-      if (0 < playerX < screenWidth - PLAYER_WIDTH) setPlayerX(prev => {
-        let pos = prev + (x * 10)
-        if (pos > screenWidth - PLAYER_WIDTH) {
-          pos = screenWidth - PLAYER_WIDTH
-        } else if (pos < 0) {
-          pos = 0
-        }
+      setPlayerX(prev => {
+        let pos = prev + x * 10;
+        if (pos > screenWidth - PLAYER_WIDTH) pos = screenWidth - PLAYER_WIDTH;
+        if (pos < 0) pos = 0;
+        return pos;
+      });
+    });
 
-        return pos
-      }
-      )
-      console.log("Value of x:", x)
-    })
-
-    return () => subscription.remove()
-  }, [])
+    return () => subscription.remove();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setBullet(prev => {
-        const moved = prev.map(b => ({ ...b, y: b.y + 10 }));
-
+      setBullets(prev => {
+        const moved = prev.map(b => ({ ...b, y: b.y + 50 }));
         return moved.filter(b => b.y < screenHeight + BULLET_HEIGHT);
       });
-    }, 100);
+    }, 1);
 
     return () => clearInterval(interval);
   }, []);
 
   const handleBullet = () => {
-    const bullet = {
+    const newBullet = {
       id: Date.now(),
-      x: playerX + (PLAYER_WIDTH - BULLET_WIDTH)/2,
+      x: playerX + (PLAYER_WIDTH - BULLET_WIDTH) / 2,
       y: PLAYER_HEIGHT
-    }
+    };
 
-    setBullet(prev => [...prev, bullet])
-  }
+    setBullets(prev => [...prev, newBullet]);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={handleBullet}>
       <View style={styles.container}>
-        {
-          bullet.map((e) => {
-            return (
-              <View style = {[styles.bullet, {left: e.x, bottom: e.y}]}></View>
-            )
-          })
-        }
+        {bullets.map((b) => (
+          <View key={b.id} style={[styles.bullet, { left: b.x, bottom: b.y }]} />
+        ))}
         <View style={[styles.player, { left: playerX }]} />
         <Text style={styles.instruction}>Tilt your phone to move</Text>
+        <StatusBar style="auto" />
       </View>
     </TouchableWithoutFeedback>
   );
