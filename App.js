@@ -408,10 +408,6 @@ export default function App() {
           </View>
         )}
 
-        <Text style={styles.instruction}>
-          Tilt your phone to move — Tap to fire
-        </Text>
-
         <StatusBar style="auto" />
       </View>
     </TouchableWithoutFeedback>
